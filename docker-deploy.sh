@@ -1,4 +1,3 @@
-```
 #!/bin/sh
 tag=latest
 git clone --branch 2021-11-axia --single-branch https://github.com/academiaonline-org/dockercoins
@@ -22,4 +21,3 @@ volume_path=/data/
 volume_ops=rw
 workdir=/data/
 docker run -d --entrypoint ${entrypoint} --name ${name} --network ${network} --read-only --restart ${restart} -u ${user} -v ${volume}:${volume_path}:${volume_ops} -w ${workdir} ${image}:${tag} ${cmd}
-```
