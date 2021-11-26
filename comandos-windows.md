@@ -1,6 +1,6 @@
 # redis
 
-docker run -d --name redis --network redis --read-only --restart always -u nobody -v ${PWD}/redis/data/:/data/:rw redis:latest
+docker run -d --name redis --network webui --read-only --restart always -u nobody -v ${PWD}/redis/data/:/data/:rw redis:latest
 
 # hasher
 
@@ -35,4 +35,8 @@ docker run -d --name rng --entrypoint=/usr/local/bin/python --network rng --read
 
 # worker
 
-docker run -d --name worker --entrypoint=/usr/local/bin/python --network redis --read-only --restart always -u nobody -v ${PWD}/worker/worker.py:/worker/worker.py:ro -w /worker worker:latest worker.py
+docker run -d --name worker --entrypoint=/usr/local/bin/python --network worker --read-only --restart always -u nobody -v ${PWD}/worker/worker.py:/worker/worker.py:ro -w /worker worker:latest worker.py
+
+docker network connect redis worker
+docker network connect rng worker
+docker network connect hasher worker
