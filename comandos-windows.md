@@ -40,3 +40,7 @@ docker run -d --name worker --entrypoint=/usr/local/bin/python --network worker 
 docker network connect redis worker
 docker network connect rng worker
 docker network connect hasher worker
+
+# webui
+
+docker run -d --name webui --entrypoint=node --network webui --read-only --restart always -u root -p 8080:8080 -v ${PWD}/webui/webui.js:/webui.js:ro  -v ${PWD}/webui/files/:/files/:ro webui:latest webui.js
