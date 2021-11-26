@@ -1,0 +1,146 @@
+version: '3.9'
+
+networks:
+  hasher:
+    internal: true
+  rng:
+    internal: true
+  webui:
+    internal: true
+  worker:
+    internal: true
+
+services:
+
+  redis:
+    command: 
+      - redis-server
+    entrypoint:
+      - /usr/local/bin/docker-entrypoint.sh
+    image: redis:latest
+    networks:
+      - webui
+      - worker
+    user: redis
+    volumes:
+      - 
+        read_only: false
+        source: redis
+        target: /data/
+        type: volume
+    working_dir: /data/
+
+  hasher:
+    environment:
+      - GEM_HOME=/usr/local/bundle
+      - BUNDLE_SILENCE_ROOT_WARNING=1
+      - BUNDLE_APP_CONFIG=/usr/local/bundle
+      - PATH=/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    command:
+      - hasher.rb
+    entrypoint:
+      - /usr/local/bin/ruby
+    image: hasher:latest
+    networks:
+      - hasher
+    user: nobody
+    volumes:
+      - 
+        read_only: true
+        source: ./hasher/hasher.rb
+        target: /hasher/hasher.rb
+        type: bind
+    working_dir: /hasher/
+    
+  rng:
+    command:
+      - rng.py
+    entrypoint:
+      - /usr/local/bin/python
+    image: rng:latest
+    networks:
+      - rng
+    user: nobody
+    volumes:
+      - 
+        read_only: true
+        source: ./rng/rng.py
+        target: /rng/rng.py
+        type: bind
+      - 
+        read_only: false
+        target: /usr/local/lib/python3.10/collections/__pycache__
+        type: tmpfs
+      - 
+        read_only: false
+        target: /usr/local/lib/python3.10/encodings/__pycache__
+        type: tmpfs
+      - 
+        read_only: false
+        target: /usr/local/lib/python3.10/importlib/__pycache__
+        type: tmpfs
+      - 
+        read_only: false
+        target: /usr/local/lib/python3.10/__pycache__
+        type: tmpfs
+    working_dir: /rng/
+    
+  worker:
+    command:
+      - worker.py
+    entrypoint:
+      - /usr/local/bin/python
+    image: worker:latest
+    networks:
+      - hasher
+      - rng
+      - worker
+    user: nobody
+    volumes:
+      - 
+        read_only: true
+        source: ./worker/worker.py
+        target: /worker/worker.py
+        type: bind
+      - 
+        read_only: false
+        target: /usr/local/lib/python3.10/collections/__pycache__
+        type: tmpfs
+      - 
+        read_only: false
+        target: /usr/local/lib/python3.10/encodings/__pycache__
+        type: tmpfs
+      - 
+        read_only: false
+        target: /usr/local/lib/python3.10/importlib/__pycache__
+        type: tmpfs
+      - 
+        read_only: false
+        target: /usr/local/lib/python3.10/__pycache__
+        type: tmpfs
+    working_dir: /worker/
+    
+  webui:
+    command:
+      - webui.js
+    entrypoint:
+      - /usr/local/bin/node
+    image: webui:latest
+    networks:
+      - webui
+    user: nobody
+    volumes:
+      - 
+        read_only: true
+        source: ./webui/webui.js
+        target: /webui/webui.js
+        type: bind
+      - 
+        read_only: true
+        source: ./webui/files/
+        target: /webui/files/
+        type: bind
+    working_dir: /webui/
+    
+volumes:
+  redis:
