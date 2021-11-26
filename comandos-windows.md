@@ -43,4 +43,7 @@ docker network connect hasher worker
 
 # webui
 
-docker run -d --name webui --entrypoint=node --network webui --read-only --restart always -u root -p 8080:8080 -v ${PWD}/webui/webui.js:/webui.js:ro  -v ${PWD}/webui/files/:/files/:ro webui:latest webui.js
+docker run -d --name webui --entrypoint=node --network webui --read-only --restart always -u nobody -p 8080:8080 -v ${PWD}/webui/webui.js:/webui.js:ro  -v ${PWD}/webui/files/:/files/:ro webui:latest webui.js
+
+fallaba el cliente de redis para node (unexpected token) asi que usamos una imagen antigua del webui
+academiaonline/dockercoins:2021-10-webui
