@@ -125,7 +125,7 @@ services:
       - webui.js
     entrypoint:
       - /usr/local/bin/node
-    image: webui:latest
+    image: academiaonline/dockercoins:2021-10-webui
     networks:
       - webui
     user: nobody
