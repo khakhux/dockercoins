@@ -40,6 +40,7 @@ docker run -d --name worker --entrypoint=/usr/local/bin/python --network worker 
 docker network connect redis worker
 docker network connect rng worker
 docker network connect hasher worker
+docker network connect worker redis
 
 # webui
 
